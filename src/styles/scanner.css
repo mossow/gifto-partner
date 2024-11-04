@@ -1,0 +1,29 @@
+.scanner-container {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  overflow: hidden;
+  background: #000;
+}
+
+.scanner-viewport {
+  width: 100%;
+  height: 100%;
+}
+
+.scanner-laser {
+  position: absolute;
+  top: 40%;
+  height: 2px;
+  width: 100%;
+  background: red;
+  z-index: 2;
+  box-shadow: 0 0 4px red;
+  animation: scanning 2s infinite;
+}
+
+@keyframes scanning {
+  50% {
+    transform: translateY(100px);
+  }
+}
