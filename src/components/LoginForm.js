@@ -58,6 +58,8 @@ const LoginForm = ({ setIsAuthenticated }) => {
     return (
         <Container maxW="container.sm" py={8}>
             <Box 
+                as="form"
+                onSubmit={handleSubmit} 
                 p={8} 
                 bg="white" 
                 boxShadow="lg" 
@@ -101,6 +103,7 @@ const LoginForm = ({ setIsAuthenticated }) => {
                     </FormControl>
 
                     <Button
+                        type="submit"
                         variant="success"
                         width="100%"
                         onClick={handleSubmit}

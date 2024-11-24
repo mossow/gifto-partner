@@ -37,7 +37,7 @@ const GiftCardForm = ({ setIsAuthenticated }) => {
     const [showTransactions, setShowTransactions] = useState(false);
     const [transactions, setTransactions] = useState([]);
     const toast = useToast();
-
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!pan || !cvv || !amount) {
@@ -46,6 +46,7 @@ const GiftCardForm = ({ setIsAuthenticated }) => {
                 description: "Kõik väljad peavad olema täidetud",
                 status: "warning",
                 duration: 3000,
+                position: "top",
                 isClosable: true,
             });
             return;
@@ -137,12 +138,17 @@ const GiftCardForm = ({ setIsAuthenticated }) => {
                         <FormControl isRequired>
                             <FormLabel>Kinkekaardi nr:</FormLabel>
                             <InputGroup>
-                                <Input
-                                    type="number"
-                                    value={pan}
-                                    onChange={(e) => setPan(e.target.value)}
-                                    disabled={loading}
-                                />
+        <Input
+            type="text" // Change to text for more control over length
+            value={pan}
+            onChange={(e) => setPan(e.target.value)}
+            minLength={16} // Minimum length of 16 characters
+            maxLength={16} // Ensure no more than 16 characters
+            disabled={loading}
+            pattern="\d{16}" // Only allow 16 digits
+            title="Kinkekaardi number peab olema 16 numbrit."
+            required // HTML5 built-in validation
+        />
                                 <InputRightElement>
                                     <IconButton
                                         variant="scanner"

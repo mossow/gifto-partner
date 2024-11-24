@@ -4,12 +4,24 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-// Register the service worker if supported
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/serviceWorker.js')
       .then(registration => {
         console.log('Service Worker registered with scope:', registration.scope);
+
+        // Check for updates
+        registration.onupdatefound = () => {
+          const newWorker = registration.installing;
+          newWorker.onstatechange = () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              // Notify the user about the new version
+              if (window.confirm(`A new version is available. Refresh to update?`)) {
+                window.location.reload();
+              }
+            }
+          };
+        };
       })
       .catch(error => {
         console.error('Service Worker registration failed:', error);
@@ -24,5 +36,4 @@ root.render(
   </React.StrictMode>
 );
 
-// Optional: If you want to measure performance
 reportWebVitals();

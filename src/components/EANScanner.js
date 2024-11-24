@@ -1,56 +1,64 @@
 import React, { useEffect, useRef } from 'react';
 import Quagga from 'quagga';
 import '../styles/scanner.css';
+import { useToast } from '@chakra-ui/react'; // Importing Chakra UI toast for notifications
 
 const EANScanner = ({ onDetected }) => {
   const scannerRef = useRef(null);
+  const toast = useToast();
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (scannerRef.current) {
-        Quagga.init({
+    if (scannerRef.current) {
+      Quagga.init(
+        {
           inputStream: {
             name: "Live",
             type: "LiveStream",
             target: scannerRef.current,
             constraints: {
-              facingMode: "environment",
-              width: { min: 450 },
-              height: { min: 300 },
-              aspectRatio: { min: 1, max: 2 }
+              facingMode: "environment", // Use the back camera
+              width: { min: 640 },
+              height: { min: 480 },
             },
           },
-          locator: {
-            patchSize: "medium",
-            halfSample: true
-          },
-          numOfWorkers: 2,
           decoder: {
-            readers: ["code_128_reader"]
+            readers: ["code_128_reader"], // Reader type
           },
-          locate: true
-        }, function(err) {
+          locate: true, // Enables barcode locating before decoding
+        },
+        (err) => {
           if (err) {
-            console.error("Scanner initialization failed:", err);
+            console.error("QuaggaJS initialization failed:", err);
             return;
           }
           Quagga.start();
-        });
+        }
+      );
 
-        Quagga.onDetected((result) => {
-          if (result && result.codeResult) {
-            onDetected(result.codeResult.code);
-            Quagga.stop();
+      Quagga.onDetected((result) => {
+        if (result && result.codeResult) {
+          const scannedCode = result.codeResult.code;
+
+          if (scannedCode.length === 16) {
+            onDetected(scannedCode);
+          } else {
+            toast({
+              title: "Palun kontrolli kinkekaardi numbrit!",
+              description: "Leitud number peab olema täpselt 16 numbrit.",
+              status: "warning",
+              duration: 3000,
+              isClosable: true,
+            });
+            Quagga.stop(); // Stop the scanner and close the modal
           }
-        });
-      }
-    }, 100);
+        }
+      });
+    }
 
     return () => {
-      clearTimeout(timeout);
-      Quagga.stop();
+      Quagga.stop(); // Stop scanner on component unmount
     };
-  }, [onDetected]);
+  }, [onDetected, toast]);
 
   return (
     <div className="scanner-container">
